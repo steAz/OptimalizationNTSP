@@ -1,0 +1,73 @@
+﻿<Window x:Class="optimalizationNTSP.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:optimalizationNTSP"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Traveling Salesman Problem by MK" Height="430.475" Width="900.068"
+        Closing="Window_Closing"
+        x:Name ="Root">
+    <Grid Margin="0,0,0,-9">
+        <TextBox Name="FileTb" HorizontalAlignment="Left" Height="23" Margin="22,25,0,0" Text="'Loaded file...'" VerticalAlignment="Top" Width="168"/>
+        <Button Name="LoadFileBtn" Content="Load tsp file" HorizontalAlignment="Left" Margin="214,25,0,0" VerticalAlignment="Top" Width="75" Click="LoadFileBtn_Click" Height="23"/>
+        <Label Name="HowManyTasksLabel" Content="How many tasks?" HorizontalAlignment="Left" Margin="22,80,0,0" VerticalAlignment="Top" Width="110"/>
+        <ComboBox Name="HowManyTasksCb" HorizontalAlignment="Left" Margin="35,106,0,0" VerticalAlignment="Top" Width="36">
+            <system:Int32>1</system:Int32>
+            <system:Int32>2</system:Int32>
+            <system:Int32>3</system:Int32>
+            <system:Int32>4</system:Int32>
+            <system:Int32>5</system:Int32>
+            <system:Int32>6</system:Int32>
+            <system:Int32>7</system:Int32>
+            <system:Int32>8</system:Int32>
+        </ComboBox>
+        <Label Name="HowLongLabel" Content="How long?" HorizontalAlignment="Left" Margin="22,146,0,0" VerticalAlignment="Top" Width="76"/>
+        <Label Name="PhaseFirstLabel" Content="Phase 1" HorizontalAlignment="Left" Margin="35,177,0,0" VerticalAlignment="Top"/>
+        <Label Name="PhaseSecLabel" Content="Phase 2" HorizontalAlignment="Left" Margin="35,208,0,0" VerticalAlignment="Top"/>
+        <ComboBox Name="PhaseFirstTimeCb" HorizontalAlignment="Left" Margin="91,181,0,0" VerticalAlignment="Top" Width="45"/>
+        <ComboBox Name="PhaseSecTimeCb" HorizontalAlignment="Left" Margin="91,212,0,0" VerticalAlignment="Top" Width="45"/>
+        <ComboBox Name ="PhaseFirstUnitCb" HorizontalAlignment="Left" Margin="141,181,0,0" VerticalAlignment="Top" Width="49">
+            <ComboBoxItem Name ="PhaseFirstUnitSeconds">s</ComboBoxItem>
+            <ComboBoxItem Name ="PhaseFirstUnitMinutes">m</ComboBoxItem>
+        </ComboBox>
+        <ComboBox Name ="PhaseSecUnitCb" HorizontalAlignment="Left" Margin="141,212,0,0" VerticalAlignment="Top" Width="49">
+            <ComboBoxItem Name ="PhaseSecUnitSeconds">s</ComboBoxItem>
+            <ComboBoxItem Name ="PhaseSecUnitMinutes">m</ComboBoxItem>
+        </ComboBox>
+        <Label Name ="ProgressLabel" Content="Progress and results" HorizontalAlignment="Left" Margin="251,115,0,0" VerticalAlignment="Top" Width="127"/>
+        <Label Name="BestDistanceLabel" Content="Best distance"   HorizontalAlignment="Left" Margin="274,146,0,0" VerticalAlignment="Top" Width="79"/>
+        <TextBox Name="BestDistanceTb"  HorizontalAlignment="Left" Height="23" Margin="369,149,0,0" Text="{Binding BestDistance}" VerticalAlignment="Top" Width="120"/>
+        <Button Name="StartComputingBtn" Content="Start paralleling" HorizontalAlignment="Left" Margin="57,322,0,0" VerticalAlignment="Top" Width="118" Click="StartComputingBtn_Click"/>
+        <Label Name="SolutionCountLabel" Content="Solution count" HorizontalAlignment="Left" Margin="274,177,0,0" VerticalAlignment="Top" Width="90"/>
+        <TextBox Name="SolutionCountTb" HorizontalAlignment="Left" Height="23" Margin="369,177,0,0" Text="{Binding SolutionCount}" VerticalAlignment="Top" Width="120"/>
+        <Label Name="TaskIdLabel" Content="Task/Thread ID" HorizontalAlignment="Left" Margin="274,208,0,0" VerticalAlignment="Top" Width="90"/>
+        <TextBox Name ="TaskIdTb" HorizontalAlignment="Left" Height="23" Margin="369,208,0,0" TextWrapping="Wrap" Text="{Binding TaskId}" VerticalAlignment="Top" Width="120"/>
+        <ProgressBar Name="ComputingPb" HorizontalAlignment="Left" Height="23" Margin="274,241,0,0" VerticalAlignment="Top" Width="215"
+                     Value="{Binding ComputingProgress}"
+                     Maximum ="{Binding MaxProgress}"/>
+        <TextBlock Name="ProgressInfoTBlock" 
+                   TextWrapping="WrapWithOverflow" 
+                   HorizontalAlignment="Left" 
+                   Margin="298,269,0,0" 
+                   VerticalAlignment="Top" 
+                   Width="152" Height="68"/>
+        <Button Name="StopNNTSPbtn" Content="Stop computing" HorizontalAlignment="Left" Margin="57,348,0,0" VerticalAlignment="Top" Width="118" Click="StopNNTSPbtn_Click"/>
+        <Button Name="ExitAppBtn" Content="Exit app" HorizontalAlignment="Left" Margin="180,348,0,0" VerticalAlignment="Top" Width="96" Click="ExitAppBtn_Click"/>
+
+        <ListView ItemsSource="{Binding BestTour}" Margin="518,43,24,22">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="90" Header="ID" DisplayMemberBinding="{Binding Id}" />
+                    <GridViewColumn Width="120" Header="X" DisplayMemberBinding="{Binding X}" />
+                    <GridViewColumn Width="120" Header="Y" DisplayMemberBinding="{Binding Y}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label Content="Optimal tour" HorizontalAlignment="Left" Margin="518,12,0,0" VerticalAlignment="Top" Width="350"/>
+        <Label Content="Mechanism" HorizontalAlignment="Left" Margin="22,239,0,0" VerticalAlignment="Top" Width="76"/>
+        <RadioButton Name="TlpRb" GroupName="MechanismRb" Content="TPL" HorizontalAlignment="Left" Margin="35,281,0,0" VerticalAlignment="Top"/>
+        <RadioButton Name="ThreadPoolRb" GroupName="MechanismRb" Content="ThreadPool" HorizontalAlignment="Left" Margin="78,281,0,0" VerticalAlignment="Top"/>
+    </Grid>
+</Window>
