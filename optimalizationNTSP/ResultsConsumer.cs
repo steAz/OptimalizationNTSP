@@ -121,6 +121,8 @@ namespace optimalizationNTSP
             PlaceTourCanvas = new Canvas();
             YHeight = 600;
             XWidth = 900;
+            ComputingProgress = 0;
+            MaxProgress = Double.MaxValue;
             _bestDistanceLock = new object();
         }
 

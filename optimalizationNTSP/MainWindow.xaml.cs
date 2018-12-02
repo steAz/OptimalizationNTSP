@@ -91,11 +91,11 @@ namespace optimalizationNTSP
                 return;
             }
 
-            RunComputingAsync();
+            RunComputing();
         }
 
 
-        private void RunComputingAsync()
+        private void RunComputing()
         {
             _tasks = null;
             _tasks = new List<Task>();
@@ -109,7 +109,7 @@ namespace optimalizationNTSP
                 PhaseSecUnitCb.Text[0]);
 
             _resultsConsumer.ComputingProgress = 0;
-            _resultsConsumer.MaxProgress = phaseFirstTimeInSeconds + phaseSecTimeInSeconds;
+            _resultsConsumer.MaxProgress = phaseFirstTimeInSeconds + phaseSecTimeInSeconds + 2; // two secs for eventual mistake
             _resultsConsumer.SolutionCount = Double.MaxValue;
             _resultsConsumer.BestDistance = Double.MaxValue;
             _resultsConsumer.TaskId = 0;
@@ -137,6 +137,7 @@ namespace optimalizationNTSP
             });
             _bus.Start();
 
+            ProgressInfoTBlock.Text = "Computing in progress ...";
             if (TlpRb.IsChecked != null && (bool) TlpRb.IsChecked)
                 RunViaTPL(numOfTasks, phaseFirstTimeInSeconds, phaseSecTimeInSeconds, tspDataFilePath);
             else if (ThreadPoolRb.IsChecked != null && (bool) ThreadPoolRb.IsChecked)
@@ -172,18 +173,26 @@ namespace optimalizationNTSP
                 };
                 ThreadPool.QueueUserWorkItem(x => wrappedAction());
             }
-            WaitHandle.WaitAll(handles);
 
-            FinalWorkForThreadPool();
+            var xd = await FinalWorkForThreadPool();
+            if(ProgressInfoTBlock.Text != "Computing was stopped")
+                ProgressInfoTBlock.Text = "Computing ended, but some more results may come ...";
+            ExitAppBtn.Visibility = Visibility.Visible;
             return 0;
         }
 
-        private void FinalWorkForThreadPool()
+        private void WaitForThreadPoolToEndWork()
         {
-            while (_sw.Elapsed.TotalSeconds < _resultsConsumer.MaxProgress + 1) // one sec for eventual mistake
-            { }
+            var secondsToWait = (int) _resultsConsumer.MaxProgress - (int) _sw.Elapsed.TotalSeconds;
+            Thread.Sleep((secondsToWait + 2) * 1000); //long running operation, not necessarily pause
+        }
+
+        private async Task<int> FinalWorkForThreadPool()
+        {
+            await Task.Run(() => WaitForThreadPoolToEndWork());
             _sw.Reset();
             _dTforUpdatingProgressBar.Stop();
+            return 0;
         }
 
         private async void RunViaTPL(int numOfTasks, int phaseFirstTimeInSeconds, int phaseSecTimeInSeconds,
@@ -211,7 +220,7 @@ namespace optimalizationNTSP
         {
             if (tasks.All(t => t.Status == TaskStatus.RanToCompletion))
             {
-                while (_sw.Elapsed.TotalSeconds < _resultsConsumer.MaxProgress + 1) // one sec for eventual mistake
+                while (_sw.Elapsed.TotalSeconds < _resultsConsumer.MaxProgress + 2) // two secs for eventual mistake
                 { }
                 _sw.Reset();
                 _dTforUpdatingProgressBar.Stop();
@@ -269,7 +278,7 @@ namespace optimalizationNTSP
             this.Close();
         }
 
-        private void StopNNTSPbtn_Click(object sender, RoutedEventArgs e)
+        private void StopNTSPbtn_Click(object sender, RoutedEventArgs e)
         {
             _bus?.Stop();
             _bus = null;
