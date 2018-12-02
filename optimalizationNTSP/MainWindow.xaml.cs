@@ -174,7 +174,7 @@ namespace optimalizationNTSP
                 ThreadPool.QueueUserWorkItem(x => wrappedAction());
             }
 
-            var xd = await FinalWorkForThreadPool();
+            var awaiter = await FinalWorkForThreadPool();
             if(ProgressInfoTBlock.Text != "Computing was stopped")
                 ProgressInfoTBlock.Text = "Computing ended, but some more results may come ...";
             ExitAppBtn.Visibility = Visibility.Visible;
